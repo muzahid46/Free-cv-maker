@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free CV Maker</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Merriweather:wght@400;700&family=Montserrat:wght@400;700&family=Open+Sans:wght@400;700&family=Playfair+Display:wght@400;700&family=Poppins:wght@400;600&family=Raleway:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef2f1;--sf:#fff;--ink:#14213d;--mu:#5b6577;--ln:#cfd8d6}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1a24;--sf:#172433;--ink:#e8eef5;--mu:#9aa8bb;--ln:#2b3b4e}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+input,select,textarea{width:100%;padding:10px 11px;margin:4px 0;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--ln);border-radius:8px}
+textarea{min-height:76px;resize:vertical}
+button{font:inherit;cursor:pointer;color:var(--ink)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.btn{width:100%;margin-top:10px;padding:12px;font-weight:700;color:var(--bg);background:var(--ink);border:0;border-radius:8px}
+.btn.alt{color:var(--ink);background:transparent;border:1px solid var(--ln)}
+.sm{padding:6px 12px;font-size:.85rem;background:transparent;border:1px solid var(--ln);border-radius:8px}
+.mu,small{color:var(--mu)}
+#loading{min-height:100vh;display:grid;place-items:center}
+#auth{min-height:100vh;display:grid;place-items:center;padding:16px}
+.card{width:100%;max-width:400px;background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:24px}
+.card h1{margin:0 0 4px;font-size:1.5rem}
+.seg{display:flex;gap:6px;margin:14px 0 8px}.seg button{flex:1;padding:9px;background:transparent;border:1px solid var(--ln);border-radius:8px}
+.seg .on,.chips .on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.msg{color:#b3261e;min-height:1.4em;margin:10px 0 0}
+#fg{display:block;text-align:center;margin-top:12px;color:var(--mu);font-size:.9rem}
+.bar{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--sf);border-bottom:1px solid var(--ln)}
+.bar b{flex:1}.bar span{color:var(--mu);font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:40vw}
+.tabs{display:none;gap:6px;padding:10px 16px 0}.tabs button{flex:1;padding:10px;background:var(--sf);border:1px solid var(--ln);border-radius:8px}.tabs .on{background:var(--ink);color:var(--bg)}
+.work{display:grid;grid-template-columns:390px 1fr;gap:16px;padding:16px;max-width:1300px;margin:0 auto;align-items:start}
+.panel{background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:6px 16px 16px}
+details{border-bottom:1px solid var(--ln);padding:8px 0}details:last-child{border:0}
+summary{font-weight:700;padding:6px 0;cursor:pointer}
+label{display:block;font-size:.85rem;font-weight:600;margin-top:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.chips button{padding:7px 11px;font-size:.85rem;background:transparent;border:1px solid var(--ln);border-radius:20px}
+.chips .sw{width:30px;height:30px;padding:0;border-radius:50%;border:3px solid var(--sf)}.chips .sw.on{box-shadow:0 0 0 2px var(--ink)}
+.row{border:1px solid var(--ln);border-radius:8px;padding:8px;margin:8px 0}
+.row input,.row textarea{margin:3px 0}
+.acts{display:flex;align-items:center;gap:12px;margin-bottom:10px}.acts .btn{width:auto;margin:0;padding:11px 20px}
+#pv{overflow:hidden;background:#cdd5d3;border-radius:8px}#cvbox{width:794px;transform-origin:top left}
+#gal{position:fixed;inset:0;z-index:50;background:var(--bg);overflow:auto;padding:12px}
+.gh{display:flex;align-items:center;gap:8px;position:sticky;top:-12px;background:var(--bg);padding:8px 0;z-index:2}.gh b{flex:1;text-align:center}
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.th{position:relative;overflow:hidden;padding:0;background:#fff;border:2px solid var(--ln);border-radius:8px}
+.th.on{border-color:var(--ink)}.th small{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.9);color:#333;font-size:.75rem;padding:1px}
+.sc{width:794px;transform-origin:top left;pointer-events:none;text-align:left}
+@media(max-width:900px){.work{display:block;padding:12px}.tabs{display:flex}.work.pv .panel,.work:not(.pv) #pvwrap{display:none}}
+/* ---- CV paper ---- */
+.cv{width:794px;min-height:1123px;background:#fff;color:#222;display:grid;font-size:13px;line-height:1.5;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.cv header{grid-area:head;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:36px 40px 20px}
+.cv aside{grid-area:side;padding:24px 28px}.cv main{grid-area:main;padding:8px 40px 36px}
+.cv h1{margin:0;font-size:34px;line-height:1.1;color:var(--ac)}.cv h2{margin:6px 0 0;font-size:16px;font-weight:400;color:#555}
+.cv h3{margin:18px 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--ac)}
+.cv p{margin:2px 0;word-break:break-word}.cv ul{margin:0;padding-left:16px}
+.ph{width:110px;height:110px;border-radius:50%;object-fit:cover;flex:none}
+.ph0{display:flex;align-items:center;justify-content:center;background:var(--tn);color:var(--ac);font-size:44px;font-weight:700}
+.it{margin-bottom:10px}.it b{display:block}.it i{color:#777;font-size:12px;margin-right:8px}.it span{color:#444}
+.h0 h3{border-bottom:2px solid var(--ac);padding-bottom:4px}
+.h1 h3{background:var(--ac);color:#fff;padding:4px 10px;border-radius:4px}
+.h2 h3{border-left:5px solid var(--ac);padding-left:8px}
+.l1 .phh,.l2 .phh{display:none}.cv:not(.l1):not(.l2) .phs{display:none}.phs{margin-bottom:8px}
+.l0,.l4,.l5{grid-template-columns:1fr;grid-template-rows:auto auto 1fr;grid-template-areas:"head""side""main"}
+.l0 aside,.l4 aside,.l5 aside{columns:2;padding:0 40px}
+.l1{grid-template-columns:250px 1fr;grid-template-rows:auto 1fr;grid-template-areas:"side head""side main"}
+.l1 aside{background:var(--ac);color:#fff}
+.l1 aside h3{background:none;color:#fff;border:0;border-bottom:1px solid rgba(255,255,255,.5);padding:0 0 4px}
+.l2{grid-template-columns:1fr 250px;grid-template-rows:auto 1fr;grid-template-areas:"head side""main side"}.l2 aside{background:var(--tn)}
+.l3{grid-template-columns:1fr 250px;grid-template-rows:auto 1fr;grid-template-areas:"head head""main side"}
+.l3 header{background:var(--ac)}.l3 h1,.l3 h2{color:#fff}.l3 aside{background:var(--tn)}
+.l4 header{flex-direction:column;text-align:center}.l4 .phh{order:-1}
+.l5 .it{border-left:2px solid var(--ac);padding-left:14px;position:relative;margin-left:4px}
+.l5 .it:before{content:"";position:absolute;left:-6px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--ac)}
+@media print{.bar,.tabs,.panel,.acts,#gal,#auth,#loading{display:none!important}
+body{background:#fff}.work{display:block;padding:0}#pvwrap{display:block!important}
+#pv{height:auto!important;background:none;border-radius:0}#cvbox{transform:none!important}@page{size:A4;margin:0}}
+</style>
+</head>
+<body>
+<div id="loading"><p class="mu">Loading…</p></div>
+
+<div id="auth" hidden>
+  <div class="card">
+    <h1>Free CV Maker</h1>
+    <p class="mu">Log in to create and download your CV.</p>
+    <div class="seg"><button id="tIn" class="on">Log in</button><button id="tUp">Sign up</button></div>
+    <input id="em" type="email" placeholder="Email" autocomplete="email">
+    <input id="pw" type="password" placeholder="Password (6+ characters)" autocomplete="current-password">
+    <button class="btn" id="go">Log in</button>
+    <button class="btn alt" id="gg">Continue with Google</button>
+    <a href="#" id="fg">Forgot password?</a>
+    <p class="msg" id="msg" role="alert"></p>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <div class="bar"><b>Free CV Maker</b><span id="who"></span><button class="sm" id="out">Log out</button></div>
+  <div class="tabs"><button id="tE" class="on">Edit</button><button id="tP">Preview</button></div>
+  <div class="work">
+    <div class="panel">
+      <details open><summary>Design</summary>
+        <small id="dnum"></small>
+        <div class="chips"><button id="shuf">Shuffle</button><button id="brw">Browse all designs</button></div>
+        <label>Layout</label><div class="chips" id="cl"></div>
+        <label>Color</label><div class="chips" id="cc"></div>
+        <label for="cf">Font</label><select id="cf"></select>
+        <label>Heading style</label><div class="chips" id="ch"></div>
+      </details>
+      <details open><summary>Personal details</summary>
+        <label>Photo</label>
+        <input type="file" id="ph" accept="image/*"><button class="sm" id="phx">Remove photo</button>
+        <label>Full name</label><input data-b="name">
+        <label>Profession / job title</label><input data-b="title">
+        <label>Email</label><input data-b="email" type="email">
+        <label>Phone</label><input data-b="phone">
+        <label>Address</label><input data-b="address">
+      </details>
+      <details><summary>Profile &amp; skills</summary>
+        <label>About you</label><textarea data-b="summary"></textarea>
+        <label>Skills (separate with commas)</label><textarea data-b="skills"></textarea>
+      </details>
+      <details><summary>Education</summary><div id="l_edu"></div><button class="sm" data-add="edu">+ Add education</button></details>
+      <details><summary>Experience</summary><div id="l_exp"></div><button class="sm" data-add="exp">+ Add experience</button></details>
+      <button class="sm" id="clr" style="margin-top:12px">Clear all sample text</button>
+    </div>
+    <div id="pvwrap">
+      <div class="acts"><button class="btn" id="pdf">Download PDF</button><small>In the print window choose “Save as PDF”.</small></div>
+      <div id="pv"><div id="cvbox"></div></div>
+    </div>
+  </div>
+</div>
+
+<div id="gal" hidden>
+  <div class="gh"><button class="sm" id="gp">‹ Prev</button><b id="gt"></b><button class="sm" id="gn">Next ›</button><button class="sm" id="gx">Close</button></div>
+  <div class="g" id="gg2"></div>
+</div>
+
+<script>setTimeout(function(){var l=document.getElementById('loading');if(l&&!l.hidden)l.firstElementChild.textContent='Could not reach the login service. Check your internet and refresh.'},8000)</script>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import{getAuth,onAuthStateChanged,signInWithPopup,GoogleAuthProvider,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,sendPasswordResetEmail}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+const auth=getAuth(initializeApp({apiKey:"AIzaSyDxpRkPNY3pF075ZxUGscmWCwLfq8EWom4",authDomain:"free-cv-b4f22.firebaseapp.com",projectId:"free-cv-b4f22",storageBucket:"free-cv-b4f22.firebasestorage.app",messagingSenderId:"197257584098",appId:"1:197257584098:web:aafe8b23cc75869c3e2dbb"}));
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- Designs: 6 layouts x 12 colors x 8 fonts x 3 heading styles = 1728 ---------- */
+const LAY=["Classic","Sidebar left","Sidebar right","Band header","Centered","Timeline"];
+const COL=[["Navy","#1f3a5f"],["Teal","#0f766e"],["Crimson","#b3261e"],["Forest","#2f6b3a"],["Purple","#6d3fa0"],["Orange","#c2570c"],["Slate","#475569"],["Rose","#be185d"],["Indigo","#3730a3"],["Gold","#a16207"],["Sky","#0369a1"],["Charcoal","#222222"]];
+const FNT=["Roboto","Lato","Open Sans","Montserrat","Poppins","Merriweather","Playfair Display","Raleway"];
+const HEAD=["Underline","Filled","Side bar"],TOTAL=6*12*8*3;
+const dOf=i=>({l:i%6,c:Math.floor(i/6)%12,f:Math.floor(i/72)%8,h:Math.floor(i/576)%3});
+const iOf=d=>d.l+6*d.c+72*d.f+576*d.h;
+const tint=(hex,k)=>{const n=parseInt(hex.slice(1),16);return"rgb("+[n>>16,n>>8&255,n&255].map(v=>Math.round(v+(255-v)*k)).join(",")+")"};
+
+const SAMPLE={name:"Ayesha Rahman",title:"Graphic Designer",email:"ayesha@example.com",phone:"+880 1700 000000",address:"Dhaka, Bangladesh",summary:"Creative designer with 4 years of experience in branding and print. Detail-oriented and always learning.",skills:"Photoshop, Illustrator, Figma, Typography, Teamwork",photo:"",edu:[{deg:"BBA in Marketing",inst:"Dhaka College",year:"2020"}],exp:[{role:"Junior Designer",org:"Pixel Studio",period:"2021 – 2024",desc:"Designed logos, posters and social media graphics for 30+ clients."}]};
+const LISTS={edu:[["deg","Degree / qualification"],["inst","Institution"],["year","Year"]],exp:[["role","Job title"],["org","Company"],["period","Period (e.g. 2021 – 2024)"],["desc","Details"]]};
+let S={D:dOf(0),data:structuredClone(SAMPLE)},uid=null,built=false,mode="in",gpage=0;
+
+function cvHTML(d,D){
+  const ac=COL[D.c][1],ph=d.photo?`<img class="ph" src="${d.photo}" alt="">`:`<div class="ph ph0">${esc((d.name||"?")[0].toUpperCase())}</div>`;
+  const skills=(d.skills||"").split(",").map(s=>s.trim()).filter(Boolean).map(s=>`<li>${esc(s)}</li>`).join("");
+  const contact=[d.email,d.phone,d.address].filter(Boolean).map(v=>`<p>${esc(v)}</p>`).join("");
+  const items=(k,a,b,c,e)=>d[k].filter(x=>x[a]||x[b]).map(x=>`<div class="it"><b>${esc(x[a])}</b><i>${esc(x[c])}</i><span>${esc(x[b])}</span>${e&&x[e]?`<p>${esc(x[e])}</p>`:""}</div>`).join("");
+  const ex=items("exp","role","org","period","desc"),ed=items("edu","deg","inst","year");
+  return`<div class="cv l${D.l} h${D.h}" style="--ac:${ac};--tn:${tint(ac,.9)};font-family:'${FNT[D.f]}',sans-serif">
+<header><div><h1>${esc(d.name)}</h1><h2>${esc(d.title)}</h2></div><div class="phh">${ph}</div></header>
+<aside><div class="phs">${ph}</div>${contact?`<h3>Contact</h3>${contact}`:""}${skills?`<h3>Skills</h3><ul>${skills}</ul>`:""}</aside>
+<main>${d.summary?`<section><h3>Profile</h3><p>${esc(d.summary)}</p></section>`:""}${ex?`<section><h3>Experience</h3>${ex}</section>`:""}${ed?`<section><h3>Education</h3>${ed}</section>`:""}</main></div>`;
+}
+
+/* ---------- Render, preview fit, save ---------- */
+function fit(){const w=$("#pv").clientWidth;if(!w)return;const s=Math.min(1,w/794);$("#cvbox").style.transform=`scale(${s})`;$("#pv").style.height=$("#cvbox").offsetHeight*s+"px"}
+function save(){try{localStorage.setItem("cv_"+uid,JSON.stringify({D:S.D,data:S.data}))}catch(e){}}
+function render(){
+  $("#cvbox").innerHTML=cvHTML(S.data,S.D);fit();save();
+  $("#dnum").textContent=`Design #${iOf(S.D)+1} of ${TOTAL}`;
+  $$("#cl button").forEach((b,i)=>b.classList.toggle("on",i==S.D.l));
+  $$("#cc button").forEach((b,i)=>b.classList.toggle("on",i==S.D.c));
+  $$("#ch button").forEach((b,i)=>b.classList.toggle("on",i==S.D.h));
+  $("#cf").value=S.D.f;
+}
+function drawList(k){$("#l_"+k).innerHTML=S.data[k].map((it,i)=>`<div class="row">${LISTS[k].map(([f,l])=>f=="desc"?`<textarea data-k="${k}" data-i="${i}" data-f="${f}" placeholder="${l}">${esc(it[f])}</textarea>`:`<input data-k="${k}" data-i="${i}" data-f="${f}" placeholder="${l}" value="${esc(it[f])}">`).join("")}<button class="sm" data-del="${k}:${i}">Remove</button></div>`).join("")}
+function fillForm(){$$("[data-b]").forEach(e=>e.value=S.data[e.dataset.b]||"");drawList("edu");drawList("exp")}
+
+/* ---------- Gallery of designs ---------- */
+function gallery(){
+  const g=$("#gg2");g.innerHTML="";$("#gt").textContent=`Page ${gpage+1} of ${TOTAL/12}`;
+  for(let k=0;k<12;k++){const idx=gpage*12+k,b=document.createElement("button");
+    b.className="th"+(idx==iOf(S.D)?" on":"");b.innerHTML=`<div class="sc">${cvHTML(S.data,dOf(idx))}</div><small>#${idx+1}</small>`;
+    b.onclick=()=>{S.D=dOf(idx);render();$("#gal").hidden=true};g.append(b)}
+  $$(".th").forEach(t=>{const s=t.clientWidth/794,c=t.firstChild;c.style.transform=`scale(${s})`;t.style.height=c.offsetHeight*s+"px"});
+}
+
+/* ---------- Editor setup (runs once after first login) ---------- */
+function build(){
+  built=true;
+  $("#cl").innerHTML=LAY.map((n,i)=>`<button data-l="${i}">${n}</button>`).join("");
+  $("#cc").innerHTML=COL.map((c,i)=>`<button class="sw" data-c="${i}" title="${c[0]}" aria-label="${c[0]}" style="background:${c[1]}"></button>`).join("");
+  $("#ch").innerHTML=HEAD.map((n,i)=>`<button data-h="${i}">${n}</button>`).join("");
+  $("#cf").innerHTML=FNT.map((n,i)=>`<option value="${i}">${n}</option>`).join("");
+  $("#cf").onchange=e=>{S.D.f=+e.target.value;render()};
+  $(".panel").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const t=b.dataset;
+    if(t.l!=null){S.D.l=+t.l;render()}else if(t.c!=null){S.D.c=+t.c;render()}else if(t.h!=null){S.D.h=+t.h;render()}
+    else if(t.add){S.data[t.add].push({});drawList(t.add);render()}
+    else if(t.del){const[k,i]=t.del.split(":");S.data[k].splice(+i,1);drawList(k);render()}});
+  $(".panel").addEventListener("input",e=>{const t=e.target.dataset;
+    if(t.b){S.data[t.b]=e.target.value;render()}else if(t.f){S.data[t.k][+t.i][t.f]=e.target.value;render()}});
+  $("#shuf").onclick=()=>{S.D=dOf(Math.floor(Math.random()*TOTAL));render()};
+  $("#brw").onclick=()=>{gpage=Math.floor(iOf(S.D)/12);$("#gal").hidden=false;gallery()};
+  $("#gp").onclick=()=>{gpage=(gpage+TOTAL/12-1)%(TOTAL/12);gallery()};
+  $("#gn").onclick=()=>{gpage=(gpage+1)%(TOTAL/12);gallery()};
+  $("#gx").onclick=()=>$("#gal").hidden=true;
+  $("#clr").onclick=()=>{S.data={name:"",title:"",email:"",phone:"",address:"",summary:"",skills:"",photo:"",edu:[{}],exp:[{}]};fillForm();render()};
+  $("#phx").onclick=()=>{S.data.photo="";$("#ph").value="";render()};
+  $("#ph").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
+    r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement("canvas"),n=Math.min(im.width,im.height);c.width=c.height=240;
+      c.getContext("2d").drawImage(im,(im.width-n)/2,(im.height-n)/2,n,n,0,0,240,240);S.data.photo=c.toDataURL("image/jpeg",.85);render()};im.src=r.result};r.readAsDataURL(f)};
+  $("#pdf").onclick=()=>window.print();
+  $("#tE").onclick=()=>{$(".work").classList.remove("pv");$("#tE").classList.add("on");$("#tP").classList.remove("on")};
+  $("#tP").onclick=()=>{$(".work").classList.add("pv");$("#tP").classList.add("on");$("#tE").classList.remove("on");fit()};
+  addEventListener("resize",fit);
+}
+function loadUser(){
+  S={D:dOf(0),data:structuredClone(SAMPLE)};
+  try{const s=JSON.parse(localStorage.getItem("cv_"+uid));if(s&&s.data){S=s;S.data.edu=S.data.edu||[];S.data.exp=S.data.exp||[]}}catch(e){}
+  fillForm();render();
+}
+
+/* ---------- Login ---------- */
+const say=t=>$("#msg").textContent=t||"";
+const nice=e=>{const c=e.code||"";return/invalid-credential|wrong-password|user-not-found/.test(c)?"Wrong email or password.":/email-already/.test(c)?"This email is already registered. Try logging in.":/weak-password/.test(c)?"Password must be at least 6 characters.":/invalid-email/.test(c)?"Please enter a valid email.":/popup-closed|cancelled/.test(c)?"Sign-in window was closed.":/unauthorized-domain/.test(c)?"This website address is not authorized in Firebase yet.":"Something went wrong. Please try again."};
+function setMode(m){mode=m;$("#tIn").classList.toggle("on",m=="in");$("#tUp").classList.toggle("on",m=="up");$("#go").textContent=m=="in"?"Log in":"Create account";$("#pw").autocomplete=m=="in"?"current-password":"new-password";say()}
+$("#tIn").onclick=()=>setMode("in");$("#tUp").onclick=()=>setMode("up");
+$("#go").onclick=async()=>{say();const e=$("#em").value.trim(),p=$("#pw").value;if(!e||!p)return say("Enter your email and password.");
+  try{mode=="in"?await signInWithEmailAndPassword(auth,e,p):await createUserWithEmailAndPassword(auth,e,p)}catch(x){say(nice(x))}};
+$("#gg").onclick=async()=>{say();try{await signInWithPopup(auth,new GoogleAuthProvider())}catch(x){say(nice(x))}};
+$("#fg").onclick=async ev=>{ev.preventDefault();const e=$("#em").value.trim();if(!e)return say("Type your email above first.");
+  try{await sendPasswordResetEmail(auth,e);say("Password reset email sent. Check your inbox.")}catch(x){say(nice(x))}};
+$("#out").onclick=()=>signOut(auth);
+
+onAuthStateChanged(auth,u=>{
+  $("#loading").hidden=true;
+  if(u){uid=u.uid;$("#auth").hidden=true;$("#app").hidden=false;$("#who").textContent=u.displayName||u.email||"";if(!built)build();loadUser()}
+  else{uid=null;$("#app").hidden=true;$("#gal").hidden=true;$("#auth").hidden=false;$("#pw").value=""}
+});
+</script>
+</body>
+</html>
