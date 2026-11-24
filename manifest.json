@@ -2,7 +2,7 @@
  "name": "Make My CV",
 "short_name": "My CV",
   "description": "Create professional CV for free in minutes.",
-  "start_url": "/Free-cv-maker/",
+  "start_url": "/Make my CV/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2563eb",
